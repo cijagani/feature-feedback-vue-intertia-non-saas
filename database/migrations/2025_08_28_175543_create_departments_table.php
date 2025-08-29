@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasTable('departments')) {
+        if (!Schema::hasTable('departments')) {
             Schema::create('departments', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
                 $table->text('description')->nullable();
                 $table->boolean('status')->default(true);
-                $table->text('assignee_id')->nullable();
-                $table->timestamps();
+                $table->json('assignee_id')->nullable();
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             });
         }
     }

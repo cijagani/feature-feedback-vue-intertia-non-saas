@@ -11,19 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasTable('bot_flows')) {
-            Schema::create('bot_flows', function (Blueprint $table) {
+        if (!Schema::hasTable('teams')) {
+            Schema::create('teams', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedBigInteger('tenant_id')->nullable();
-                $table->foreign('tenant_id')
-                    ->references('id')
-                    ->on('tenants')
-                    ->onDelete('cascade');
                 $table->string('name');
                 $table->text('description')->nullable();
-                $table->json('flow_data')->nullable();
+                $table->string('color', 7)->default('#3B82F6');
                 $table->boolean('is_active')->default(true);
-                $table->timestamps();
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+                // Indexes
+                $table->index(['created_at'], 'idx_teams_created');
             });
         }
     }
@@ -33,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bot_flows');
+        Schema::dropIfExists('teams');
     }
 };
