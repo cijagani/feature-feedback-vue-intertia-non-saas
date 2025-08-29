@@ -3,5 +3,4 @@
     "CacheManager": true,
     "SystemInfo": true,
     "Tickets": true,
-    "ApiWebhookManager": true
 }
