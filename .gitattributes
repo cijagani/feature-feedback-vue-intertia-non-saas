@@ -1,0 +1,39 @@
+* text=auto eol=lf
+
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+/.github export-ignore
+CHANGELOG.md export-ignore
+.styleci.yml export-ignore
+README.md export-ignore
+
+# Exclude development files/folders from ZIP release
+
+/.env                      export-ignore
+/.rnd                      export-ignore
+/.gitignore                export-ignore
+/.gitattributes            export-ignore
+/.editorconfig             export-ignore
+/.idea/                    export-ignore
+/.vscode/                  export-ignore
+/node_modules/             export-ignore
+/vendor/                   export-ignore
+/tests/                    export-ignore
+/docs/                     export-ignore
+/.github/                  export-ignore
+/.husky/                   export-ignore
+/phpstan*                  export-ignore
+/prepare-release.bat       export-ignore
+/unused-files.json         export-ignore
+/version_100.txt           export-ignore
+/phpunit.xml               export-ignore
+/_ide_helper*.php          export-ignore
+/storage/debugbar/         export-ignore
+/storage/logs/*.log        export-ignore
+/storage/framework/cache/* export-ignore
+/storage/framework/sessions/* export-ignore
+/storage/framework/views/*   export-ignore

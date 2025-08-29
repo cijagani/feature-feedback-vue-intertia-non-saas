@@ -1,0 +1,183 @@
+name: Laravel Release Builder
+
+on:
+  push:
+    tags:
+      - 'v*'       # Trigger when pushing a tag like v1.0.0, v2.3.5, etc.
+
+jobs:
+  release:
+    name: Create Laravel Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🧰 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, zip, curl, dom, fileinfo, tokenizer, xml
+          tools: composer
+
+      - name: � Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: �🧪 Install Composer Dependencies (No Dev)
+        run: composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction --prefer-dist
+
+      - name: 🧪 Install Node Dependencies & then fresh build
+        run: npm install
+
+      - name: 🧪 Prepare NPM build
+        run: npm run build
+
+      - name: ⚙️ Prepare Laravel App
+        run: |
+          cp .env.example .env
+          # Create module view directories for CI environment
+          mkdir -p resources/views/modules/cachemanager
+          mkdir -p resources/views/modules/tickets
+          mkdir -p resources/views/modules/systeminfo
+          mkdir -p resources/views/modules/logviewer
+
+          # Clear all caches
+          php artisan config:clear
+          php artisan view:clear
+          php artisan cache:clear
+          php artisan clear-compiled
+
+          # Generate application key
+          php artisan key:generate --force
+
+          # Cache configuration for production
+          php artisan config:cache
+
+          # Clean up storage directories
+          rm -rf storage/logs/*.log
+          rm -rf storage/framework/cache/*
+          rm -rf storage/framework/sessions/*
+          rm -rf storage/framework/views/*
+          rm -rf storage/debugbar
+
+          # Skip view:cache - can cause issues with module views in CI
+          # php artisan view:cache
+          # Skip route:cache - causes infinite recursion in multi-tenant setup
+          # php artisan route:cache
+
+      - name: 📦 Create ZIP Archive (clean)
+        run: |
+          RELEASE_NAME=whatsmark-saas_release_${{ github.ref_name }}.zip
+
+          # Create a temporary directory for the release
+          mkdir -p release_temp
+
+          # Copy all files except those we want to exclude
+          rsync -av --progress . release_temp/ \
+            --exclude='.git' \
+            --exclude='.husky' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='docs' \
+            --exclude='.env' \
+            --exclude='.env.local' \
+            --exclude='.env.production' \
+            --exclude='.env.staging' \
+            --exclude='.env.testing' \
+            --exclude='.rnd' \
+            --exclude='*.md' \
+            --exclude='*.log' \
+            --exclude='*.cache' \
+            --exclude='phpunit.xml' \
+            --exclude='yarn.lock' \
+            --exclude='package-lock.json' \
+            --exclude='storage/logs/*.log' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='storage/framework/views/*' \
+            --exclude='storage/debugbar' \
+            --exclude='phpstan*' \
+            --exclude='_ide_helper*' \
+            --exclude='prepare-release.bat' \
+            --exclude='release_temp'
+
+          # Copy .env.example to create .env for the release
+          cp .env.example release_temp/.env
+
+          # Optimize composer autoloader for production in release directory
+          cd release_temp
+          composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction
+          composer dump-autoload --optimize --classmap-authoritative
+
+          # Install npm dependencies and build assets with error handling
+          npm install
+
+          # Verify Vue files are available for build
+          echo "Verifying Vue components for build..."
+          ls -la resources/js/components/ 2>/dev/null || echo "No components directory"
+          ls -la resources/js/dynamic-template/ 2>/dev/null || echo "No dynamic-template directory"
+
+          # Run the build with retries
+          npm run build || (echo "First build attempt failed, retrying..." && npm run build) || (echo "Second build attempt failed, final retry..." && npm run build)
+
+          # Remove Vue source files and node_modules after successful build
+          rm -rf node_modules
+          rm -rf resources/js/components
+          rm -rf resources/js/dynamic-template
+          cd ..
+
+          # Create optimized .env for production
+          #echo "APP_ENV=production" > release_temp/.env
+          #echo "APP_DEBUG=false" >> release_temp/.env
+          #echo "APP_KEY=" >> release_temp/.env
+
+          # Create the ZIP file from the temp directory
+          cd release_temp
+          zip -r ../$RELEASE_NAME . -x "*.git*" "*.DS_Store*"
+          cd ..
+
+          # Clean up temp directory
+          rm -rf release_temp
+
+          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+          echo "Created release file: $RELEASE_NAME"
+
+          # Display file information and checksums
+          ls -la $RELEASE_NAME
+          echo "Release file size: $(du -h $RELEASE_NAME | cut -f1)"
+          echo "Release SHA256: $(sha256sum $RELEASE_NAME | cut -d' ' -f1)"
+
+      - name: 🔍 Debug GitHub Token Permissions
+        run: |
+          echo "GitHub Token permissions check:"
+          echo "GITHUB_TOKEN is set: ${{ secrets.GITHUB_TOKEN != '' }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Ref: ${{ github.ref }}"
+
+      - name: 🚀 Create GitHub Release & Upload ZIP
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: ${{ env.RELEASE_NAME }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📋 Upload as Artifact (Fallback)
+        if: ${{ failure() && env.RELEASE_NAME != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: whatsmark-saas-release-${{ github.ref_name }}
+          path: ${{ env.RELEASE_NAME }}
+          retention-days: 30

@@ -1,0 +1,16 @@
+parameters:
+    level: 5
+    paths:
+        - app/Services/PaymentGateways/RazorpayPaymentGateway.php
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '#Function (tenant_route|payment_log|getUserByTenantId|tenant_id|app|route|now|event) not found#'
+        - '#Access to an undefined property Razorpay\\Api\\Api::\$(order|payment)#'
+        - '#Call to an undefined static method App\\Models\\Tenant::find\(\)#'
+        - '#Cannot access property \$(id|email|firstname|lastname) on class-string\|object#'
+        - '#Undefined method .+relationLoaded.+#'
+        - '#Undefined type Razorpay\\Api\\Api#'
+        - '#Undefined type Razorpay\\Api\\Errors\\BadRequestError#'
+        - '#Call to function method_exists\(\) with .+ will always evaluate to true#'
+        - '#Undefined type \\?Illuminate\\Support\\Carbon#'

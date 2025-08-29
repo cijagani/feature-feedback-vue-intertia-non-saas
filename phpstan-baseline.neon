@@ -1,0 +1,241 @@
+parameters:
+	ignoreErrors:
+		# Ignore all whatsapp_log function not found errors
+		-
+			message: '#^Function whatsapp_log not found\.$#'
+			paths:
+				- %currentWorkingDirectory%/app/Exceptions/WhatsAppException.php
+				- %currentWorkingDirectory%/app/Helpers/WhatsappHelper.php
+				- %currentWorkingDirectory%/app/Http/Controllers/Tenant/ManageChat.php
+				- %currentWorkingDirectory%/app/Traits/WhatsApp.php
+				- %currentWorkingDirectory%/app/Jobs/SendCampaignMessageJob.php
+				- %currentWorkingDirectory%/app/Livewire/Tenant/Campaign/CampaignCreator.php
+				- %currentWorkingDirectory%/app/Livewire/Tenant/Campaign/CsvCampaign.php
+				- %currentWorkingDirectory%/app/Livewire/Tenant/Template/TemplateList.php
+				- %currentWorkingDirectory%/app/Livewire/Tenant/Waba/ConnectWaba.php
+				- %currentWorkingDirectory%/app/Livewire/Tenant/Waba/DisconnectWaba.php
+				- %currentWorkingDirectory%/app/Traits/Ai.php
+				- %currentWorkingDirectory%/app/Http/Controllers/Whatsapp/WhatsAppWebhookController.php
+
+		# Variables that might not be defined
+		-
+			message: '#^Variable \$[a-zA-Z_]+ might not be defined\.$#'
+			paths:
+				- %currentWorkingDirectory%/app/Http/Controllers/Whatsapp/WhatsAppWebhookController.php
+				- %currentWorkingDirectory%/app/Http/Middleware/CheckStatus.php
+				- %currentWorkingDirectory%/app/Livewire/Tenant/Tables/ContactTable.php
+				- %currentWorkingDirectory%/app/Livewire/Tenant/Contact/ImportContact.php
+				- %currentWorkingDirectory%/app/Traits/WhatsApp.php
+				- %currentWorkingDirectory%/app/Listeners/TenantCacheManager.php
+
+		# NullCoalesce and similar issues
+		-
+			message: '#^Variable .* on left side of \?\? (always exists and is not nullable|is never defined)\.$#'
+			path: %currentWorkingDirectory%
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			path: %currentWorkingDirectory%
+
+		# Nullsafe property access issues
+		-
+			message: '#^Using nullsafe (property|method) access.*$#'
+			path: %currentWorkingDirectory%
+
+		# Duplicate keys and other array issues
+		-
+			message: '#^Array has 2 duplicate keys with value ''is_read'' \(''is_read'', ''is_read''\)\.$#'
+			path: %currentWorkingDirectory%/app/Http/Controllers/Whatsapp/WhatsAppWebhookController.php
+
+		# Return type issues
+		-
+			message: '#^Method App\\Http\\Controllers\\Whatsapp\\WhatsAppWebhookController::handle_attachment_upload\(\) should return string but returns null\.$#'
+			path: %currentWorkingDirectory%/app/Http/Controllers/Whatsapp/WhatsAppWebhookController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\.*::.*\(\) should return .* but returns .*\.$#'
+			path: %currentWorkingDirectory%
+
+		# Variable in empty or isset issues
+		-
+			message: '#^Variable \$[a-zA-Z_]+ in (empty|isset)\(\) always exists and is not (falsy|nullable)\.$#'
+			path: %currentWorkingDirectory%
+
+		# WhatsAppWebhookController specific issues
+		-
+			message: '#^Call to unknown function: ''whatsapp_log''$#'
+			path: %currentWorkingDirectory%/app/Http/Controllers/Whatsapp/WhatsAppWebhookController.php
+
+		-
+			message: '#^Undefined type (''DB''|''Http'')\.$#'
+			path: %currentWorkingDirectory%/app/Http/Controllers/Whatsapp/WhatsAppWebhookController.php
+
+		-
+			message: '#^Undefined method ''id''\.$#'
+			path: %currentWorkingDirectory%/app/Http/Controllers/Whatsapp/WhatsAppWebhookController.php
+
+		# Routing method issues
+		-
+			message: '#^Call to an undefined method Illuminate\\Routing\\Redirector::(tenant_route|view)\(\)\.$#'
+			paths:
+				- %currentWorkingDirectory%/app/Http/Controllers/Auth/RegisteredUserController.php
+				- %currentWorkingDirectory%/app/Http/Controllers/Tenant/ManageCampaigns.php
+
+		# View argument issues
+		-
+			message: '#^Parameter \#1 \$view of function view expects view-string\|null, string given\.$#'
+			paths:
+				- %currentWorkingDirectory%/app/Http/Controllers/Admin/WebhookSettingsController.php
+				- %currentWorkingDirectory%/app/Livewire/Partials/HeaderNavigation.php
+				- %currentWorkingDirectory%/app/Livewire/Partials/SidebarNavigation.php
+				- %currentWorkingDirectory%/app/Livewire/Tenant/Subscription/Dashboard.php
+
+		# Unused methods
+		-
+			message: '#^Method .* is unused\.$#'
+			path: %currentWorkingDirectory%
+
+		# PHPDoc param issues
+		-
+			message: '#^PHPDoc tag @param references unknown parameter: .*$#'
+			path: %currentWorkingDirectory%
+
+		# Property assignment type issues
+		-
+			message: '#^Property .* does not accept .*\.$#'
+			path: %currentWorkingDirectory%
+
+		# Unreachable statement issues
+		-
+			message: '#^Unreachable statement - code above always terminates\.$#'
+			path: %currentWorkingDirectory%
+
+		# Boolean operation issues
+		-
+			message: '#^(Left|Right) side of (\|\||&&) is always (true|false)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Ternary and If condition issues
+		-
+			message: '#^Ternary operator condition is always (true|false)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Negated boolean expression issues
+		-
+			message: '#^Negated boolean expression is always (true|false)\.$#'
+			path: %currentWorkingDirectory%
+
+		# If condition issues
+		-
+			message: '#^If condition is always (true|false)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Method and Parameter issues
+		-
+			message: '#^(Static method|Method|Parameter) .* (invoked|expects) .* (parameters|but).*$#'
+			path: %currentWorkingDirectory%
+
+		# Comparison issues
+		-
+			message: '#^Comparison operation .*? (is always true|is always false)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Class not found issues
+		-
+			message: '#^(Class|Property|Method|Parameter|Instantiated class) .* (has|contains|references|not found)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Template type issues
+		-
+			message: '#^Template type .* is not covariant\..*$#'
+			path: %currentWorkingDirectory%
+
+		# Carbon type issues
+		-
+			message: '#^Property .* \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\Carbon\..*$#'
+			path: %currentWorkingDirectory%
+
+		# Deprecated method issues
+		-
+			message: '#^Call to deprecated method .*$#'
+			path: %currentWorkingDirectory%
+
+		# Relation issues
+		-
+			message: '#^Relation .* is not found in .* model\.$#'
+			path: %currentWorkingDirectory%
+
+		# Boolean condition checks
+		-
+			message: '#^(Result|If condition) of (&&|\|\|) is always (true|false)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Strict comparison issues
+		-
+			message: '#^Strict comparison using (===|!==) between .* will always evaluate to (true|false)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Property not found issues
+		-
+			message: '#^Access to an undefined property .*\.$#'
+			path: %currentWorkingDirectory%
+
+		# Method not found issues
+		-
+			message: '#^Call to an undefined method .*\.$#'
+			path: %currentWorkingDirectory%
+
+		# Class method issues
+		-
+			message: '#^Call to (method|static method) .* on an unknown class .*\.$#'
+			path: %currentWorkingDirectory%
+
+		# Attribute issues
+		-
+			message: '#^Attribute class .* does not exist\.$#'
+			path: %currentWorkingDirectory%
+
+		# PHPDoc type issues
+		-
+			message: '#^PHPDoc type .* of property .* is not covariant with PHPDoc type .* of overridden property .*\.$#'
+			path: %currentWorkingDirectory%
+
+		# Env calls outside config
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			path: %currentWorkingDirectory%
+
+		# Variable checks and comparisons
+		-
+			message: '#^Call to function .* with .* will always evaluate to (true|false)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Unsafe usage of new static()
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			path: %currentWorkingDirectory%
+
+		# Return void issues
+		-
+			message: '#^Method .* with return type void returns .* but should not return anything\.$#'
+			path: %currentWorkingDirectory%
+
+		# Dead catch
+		-
+			message: '#^Dead catch - .* is never thrown in the try block\.$#'
+			path: %currentWorkingDirectory%
+
+		# Method void used
+		-
+			message: '#^Result of method .* \(void\) is used\.$#'
+			path: %currentWorkingDirectory%
+
+		# Property never read
+		-
+			message: '#^Property .* is never read, only written\.$#'
+			path: %currentWorkingDirectory%
+
+		# Protected property access
+		-
+			message: '#^Access to protected property .*\.$#'
+			path: %currentWorkingDirectory%
