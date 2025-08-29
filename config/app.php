@@ -65,10 +65,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
-
-    'date_format' => 'Y-m-d', // Default: YYYY-MM-DD
-    'time_format' => 'H:i',   // Default: 24-hour format
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -104,7 +101,7 @@ return [
 
     'previous_keys' => [
         ...array_filter(
-            explode(',', env('APP_PREVIOUS_KEYS', ''))
+            explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
 
@@ -124,20 +121,6 @@ return [
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
-    ],
-
-    'tenant_default_feature' => [
-        'activity_log',
-        'system_log',
-        'tenant_settings',
-        'whatsmark_settings',
-        'template',
-        'connect_waba',
-        'waba',
-        'email_template',
-        'csv_campaign',
-        'import_contacts',
-        'subscription-list',
     ],
 
 ];

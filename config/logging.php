@@ -54,7 +54,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', env('LOG_STACK', 'single')),
+            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
         ],
 
@@ -125,14 +125,6 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
-        ],
-
-        'payment' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/payment.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'days' => 14,
-            'enabled' => env('PAYMENT_LOGGING_ENABLED', false),
         ],
 
     ],
